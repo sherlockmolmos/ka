@@ -8,11 +8,11 @@ extern "C" {
 #ifdef _WIN32
 
 
-#define SERVER_PK_PATH "server.pk"
-#define SERVER_SK_PATH "server.sk"
+#define SERVER_PK_PATH "d:/server.pk"
+#define SERVER_SK_PATH "d:/server.sk"
 
-#define CLIENT_PK_PATH "client.pk"
-#define CLIENT_SK_PATH "client.sk"
+#define CLIENT_PK_PATH "d:/client.pk"
+#define CLIENT_SK_PATH "d:/client.sk"
 
 #else
 

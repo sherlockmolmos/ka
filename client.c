@@ -131,7 +131,7 @@ int main(int argc, char *argv[]) {
 
 
 	//通过socket连接server
-    int sock = 0;
+    SOCKET sock = 0;
     struct sockaddr_in serv_addr;
 
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -252,7 +252,7 @@ int main(int argc, char *argv[]) {
     send(sock, endstr, 4, 0);
 
     printf("\n\n\nclose socket\n");
-    close(sock);
+    closesocket(sock);
 
 #ifdef _WIN32
     WSACleanup();

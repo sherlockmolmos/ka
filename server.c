@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
 	printf("Read client public key from %s as pk1 successfully!\n", CLIENT_PK_PATH);
 
 	//开始在60666端口监听
-	int server_fd, new_socket;
+	SOCKET server_fd;
     struct sockaddr_in address;
     int addrlen = sizeof(address);
 
@@ -137,6 +137,7 @@ int main(int argc, char *argv[]) {
 	printf("Server Bind 60666 successfully!\n\n");
 
 	while (1) {
+		SOCKET new_socket;
 		printf("Ready for accept connection!\n\n");
 		if ((new_socket = accept(server_fd, (struct sockaddr *)&address, &addrlen)) < 0) {
         	perror("accept");
@@ -257,10 +258,10 @@ int main(int argc, char *argv[]) {
 
 		printf("\n\n\nclose socket\n");
 
-		close(new_socket);
+		closesocket(new_socket);
 	}
 
-    close(server_fd);
+    closesocket(server_fd);
 
 #ifdef _WIN32
 	WSACleanup();
