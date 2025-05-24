@@ -54,12 +54,8 @@ void aes_128_decrypt(const char* aes_key, char* aes_iv, char* data, size_t data_
 void read_nbytes_from_socket(int sockfd, char* buffer, size_t n) {
     size_t readsize, allreadsize = 0;
 
-    while ((readsize = recv(sockfd, buffer + allreadsize, n - allreadsize, 0)) > 0) {
+    while (allreadsize < n && (readsize = recv(sockfd, buffer + allreadsize, n - allreadsize, 0)) > 0) {
         allreadsize += readsize;
-
-        if (allreadsize == n) {
-            break;
-        }
     }
 
     printf("out\n");
@@ -74,7 +70,7 @@ char* read_from_socket_with_bytespefix_then_decrept(int sockfd, char* key, char*
 
     char buffer[264] = { 0 }; // 256 + 8
 
-    while ((readsize = recv(sockfd, buffer + allreadsize, datalen - allreadsize, 0)) > 0) {
+    while (allreadsize < datalen && (readsize = recv(sockfd, buffer + allreadsize, datalen - allreadsize, 0)) > 0) {
         //printf("Received: %s\n", buffer);
         allreadsize += readsize;
 
@@ -88,10 +84,6 @@ char* read_from_socket_with_bytespefix_then_decrept(int sockfd, char* key, char*
             datalen += 8;
         }
         //printf("datelen is %d\n", datalen);
-
-        if (allreadsize == datalen) {
-            break;
-        }
     }
 
     memcpy(outlen, buffer + 4, 4);

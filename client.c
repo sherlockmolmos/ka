@@ -223,7 +223,7 @@ int main(int argc, char *argv[]) {
         random_len_data_encrypt_aes128(&random_data_len, &random_data_len_to16, aes_iv, iv_encrypt,
             &random_data_plain, &random_data_encryped_lenprefix);
 
-        printf("Sent random data len(%d to %d), encrypt by iv: %s\n", random_data_len, random_data_len_to16, temp_iv_str);
+        printf("Sent random data len(%d to %d)\nencrypt by iv: %s\n\n", random_data_len, random_data_len_to16, temp_iv_str);
         free(temp_iv_str);
         printhex(random_data_plain, random_data_len);
         printf("\n\n\n");
@@ -239,7 +239,7 @@ int main(int argc, char *argv[]) {
         temp_iv_str = stringhex(iv_decrypt, 16);
         char* data = read_from_socket_with_bytespefix_then_decrept(sock, aes_iv, iv_decrypt, &datalen);
 
-        printf("Received random data %d bytes, decrypt by iv: %s\n", datalen, temp_iv_str);
+        printf("Received random data %d bytes\ndecrypt by iv: %s\n\n", datalen, temp_iv_str);
         free(temp_iv_str);
         printhex(data, datalen);
         printf("\n\n");
