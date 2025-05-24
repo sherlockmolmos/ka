@@ -17,6 +17,8 @@ extern "C" {
 #else
 typedef int SOCKET;
 
+#define closesocket close
+
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
