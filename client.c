@@ -200,37 +200,58 @@ int main(int argc, char *argv[]) {
 	printhex(aes_iv+16, 16);
 	printf("\n\n");
 
-	//生成一个长度在16-256之间的随机数据，并用aes加密，该数据的真实长度和补齐16倍数的长度加在数据块的前面（都是int类型，所在两者共占用8字节），并发送给server
-    int random_data_len;
-    int random_data_len_to16; 
+    unsigned char iv_encrypt[16], iv_decrypt[16];
+    memcpy(iv_encrypt, aes_iv + 16, 16);
+    memcpy(iv_decrypt, aes_iv + 16, 16);
 
-    char *random_data_plain;
-    char *random_data_encryped_lenprefix;
+    int ncount = 5;
+    int nround = 0;
 
-    random_len_data_encrypt_aes128(&random_data_len, &random_data_len_to16, aes_iv, aes_iv + 16,
-                                     &random_data_plain, &random_data_encryped_lenprefix);
+    while (ncount--)
+    {
+        printf("\n\nRound %d\n\n", nround++);
 
-    printf("Sent random data len(%d to %d)\n", random_data_len, random_data_len_to16);
-    printhex(random_data_plain, random_data_len);
-    printf("\n\n\n");
+        //生成一个长度在16-256之间的随机数据，并用aes加密，该数据的真实长度和补齐16倍数的长度加在数据块的前面（都是int类型，所在两者共占用8字节），并发送给server
+        int random_data_len;
+        int random_data_len_to16;
 
-    send(sock, random_data_encryped_lenprefix, 8 + random_data_len_to16, 0);
+        char* random_data_plain;
+        char* random_data_encryped_lenprefix;
 
-    free(random_data_plain);
-    free(random_data_encryped_lenprefix);
+        char* temp_iv_str = stringhex(iv_encrypt, 16);
+
+        random_len_data_encrypt_aes128(&random_data_len, &random_data_len_to16, aes_iv, iv_encrypt,
+            &random_data_plain, &random_data_encryped_lenprefix);
+
+        printf("Sent random data len(%d to %d), encrypt by iv: %s\n", random_data_len, random_data_len_to16, temp_iv_str);
+        free(temp_iv_str);
+        printhex(random_data_plain, random_data_len);
+        printf("\n\n\n");
+
+        send(sock, random_data_encryped_lenprefix, 8 + random_data_len_to16, 0);
+
+        free(random_data_plain);
+        free(random_data_encryped_lenprefix);
 
 
-	//从server接收数据，并解密输出
-	int datalen;
-    char *data = read_from_socket_with_bytespefix_then_decrept(sock, aes_iv, aes_iv + 16, &datalen);
+        //从server接收数据，并解密输出
+        int datalen;
+        temp_iv_str = stringhex(iv_decrypt, 16);
+        char* data = read_from_socket_with_bytespefix_then_decrept(sock, aes_iv, iv_decrypt, &datalen);
 
-    printf("Received random data %d bytes:\n", datalen);
-    printhex(data, datalen);
+        printf("Received random data %d bytes, decrypt by iv: %s\n", datalen, temp_iv_str);
+        free(temp_iv_str);
+        printhex(data, datalen);
+        printf("\n\n");
 
-    free(data);
+        free(data);
+        
+    }
 
-	printf("\n\n\nclose socket\n");
+    char endstr[4] = { 0 };
+    send(sock, endstr, 4, 0);
 
+    printf("\n\n\nclose socket\n");
     close(sock);
 
 #ifdef _WIN32

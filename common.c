@@ -32,26 +32,22 @@
 
 //使用aes128(初始向量aes_iv，密钥aes_key), 加密长度为data_len的data并将结果放入out
 //data长度必须是16的倍数，这个由传入方保证
-void aes_128_encrypt(const char* aes_key, const char* aes_iv, char* data, size_t data_len, char* out) {
+void aes_128_encrypt(const char* aes_key, char* aes_iv, char* data, size_t data_len, char* out) {
     AES_KEY encryptkey;
-    char iv[16];
 
-    memcpy(iv, aes_iv, 16);  //初始向量这个参数每次使用都会将其改变，所以复制一份出来，以保证传入的参数不被改变
     AES_set_encrypt_key(aes_key, 128, &encryptkey);
 
-    AES_cbc_encrypt(data, out, data_len, &encryptkey, iv, AES_ENCRYPT);
+    AES_cbc_encrypt(data, out, data_len, &encryptkey, aes_iv, AES_ENCRYPT);
 
 }
 
 //使用aes128(初始向量aes_iv，密钥aes_key), 解密长度为data_len的data并将结果放入out
-void aes_128_decrypt(const char* aes_key, const char* aes_iv, char* data, size_t data_len, char* out) { //data length must multi for 16
+void aes_128_decrypt(const char* aes_key, char* aes_iv, char* data, size_t data_len, char* out) { //data length must multi for 16
     AES_KEY decryptkey;
-    char iv[16];
 
-    memcpy(iv, aes_iv, 16);
     AES_set_decrypt_key(aes_key, 128, &decryptkey); //初始向量这个参数每次使用都会将其改变，所以复制一份出来，以保证传入的参数不被改变
 
-    AES_cbc_encrypt(data, out, data_len, &decryptkey, iv, AES_DECRYPT);
+    AES_cbc_encrypt(data, out, data_len, &decryptkey, aes_iv, AES_DECRYPT);
 }
 
 //从sockfd读取n字节数据到buffer中
@@ -84,9 +80,14 @@ char* read_from_socket_with_bytespefix_then_decrept(int sockfd, char* key, char*
 
         if (allreadsize >= 4) {
             memcpy(&datalen, buffer, 4);
+
+            if (datalen == 0) {
+                return 0;
+            }
+
             datalen += 8;
         }
-        printf("datelen is %d\n", datalen);
+        //printf("datelen is %d\n", datalen);
 
         if (allreadsize == datalen) {
             break;

@@ -48,10 +48,10 @@ extern "C" {
 
 //使用aes128(初始向量aes_iv，密钥aes_key), 加密长度为data_len的data并将结果放入out
 //data长度必须是16的倍数，这个由传入方保证
-void aes_128_encrypt(const char *aes_key, const char *aes_iv, char *data, size_t data_len, char *out);
+void aes_128_encrypt(const char *aes_key, char *aes_iv, char *data, size_t data_len, char *out);
 
 //使用aes128(初始向量aes_iv，密钥aes_key), 解密长度为data_len的data并将结果放入out
-void aes_128_decrypt(const char *aes_key, const char *aes_iv, char *data, size_t data_len, char *out);
+void aes_128_decrypt(const char *aes_key, char *aes_iv, char *data, size_t data_len, char *out);
 
 //从sockfd读取n字节数据到buffer中
 void read_nbytes_from_socket(int sockfd, char *buffer, size_t n);
