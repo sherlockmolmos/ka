@@ -1,5 +1,5 @@
 CFLAGS = -Wall -DKYBER_K=2
-LDFLAGS = -lpthread -lcrypto
+LDFLAGS = -lcrypto
 COMMONC = printhex.c randombytes.c common.c kem.c indcpa.c polyvec.c poly.c ntt.c cbd.c reduce.c verify.c fips202.c symmetric-shake.c
 
 all: client server libkyber512aes128
