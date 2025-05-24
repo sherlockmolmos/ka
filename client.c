@@ -255,10 +255,7 @@ int main(int argc, char *argv[]) {
     close(sock);
 
 #ifdef _WIN32
-    // 清理Winsock资源
     WSACleanup();
-    printf("资源已清理\n");
-    return 0;
 #endif
 
     return 0;

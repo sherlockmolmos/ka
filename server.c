@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
     address.sin_port = htons(60666);
 
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
-        perror("bind failed");
+        perror("bind failed!");
         exit(EXIT_FAILURE);
     }
 
@@ -263,10 +263,7 @@ int main(int argc, char *argv[]) {
     close(server_fd);
 
 #ifdef _WIN32
-	// 清理Winsock资源
 	WSACleanup();
-	printf("资源已清理\n");
-	return 0;
 #endif
 
     return 0;
