@@ -46,10 +46,10 @@ int print_key(){
     fread(sk, pqcrystals_kyber512_SECRETKEYBYTES, 1, fp);
     fclose(fp);
 
-    printf("Public Key:\n");
+    printf("Client Public Key:\n");
     printhex(pk, pqcrystals_kyber512_PUBLICKEYBYTES);
 
-    printf("\nSecret Key:\n");
+    printf("\nClient Secret Key:\n");
     printhex(sk, pqcrystals_kyber512_SECRETKEYBYTES);
 
 	printf("\n");
