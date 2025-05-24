@@ -15,6 +15,7 @@ extern "C" {
 #define CLIENT_SK_PATH "d:/client.sk"
 
 #else
+typedef int SOCKET;
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
