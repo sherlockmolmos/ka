@@ -77,6 +77,90 @@ int generate_key(){
     return 0;
 }
 
+int testspeed(const char *s){
+   
+	int n = atoi(s);
+
+    if (n == 0) {
+        printf("test speed count invalid or less than 0 o", s);
+        return -1;
+	}
+
+    uint8_t *pk = malloc(pqcrystals_kyber512_PUBLICKEYBYTES * n);
+    uint8_t *sk = malloc(pqcrystals_kyber512_SECRETKEYBYTES * n);
+    uint8_t *ss = malloc(32 * n);
+    uint8_t *ct = malloc(pqcrystals_kyber512_CIPHERTEXTBYTES * n);
+
+    for (int i = 0; i < n; i++) {
+        ret_val = pqcrystals_kyber512_ref_keypair(pk + i* pqcrystals_kyber512_PUBLICKEYBYTES, sk + i * pqcrystals_kyber512_SECRETKEYBYTES);
+        if (ret_val != 0) {
+            printf("Keypair generation failed: %d\n", ret_val);
+            return -1;
+        }
+    }
+
+    int ret_val = 0;
+    LARGE_INTEGER start, end, tc;
+	QueryPerformanceFrequency(&tc);
+        
+	uint8_t pktemp[pqcrystals_kyber512_PUBLICKEYBYTES];
+    uint8_t sktemp[pqcrystals_kyber512_SECRETKEYBYTES];
+
+	QueryPerformanceCounter(&start);
+
+    for (int i = 0; i < n; i++) {
+        ret_val = pqcrystals_kyber512_ref_keypair(pktemp, sktemp);
+        if (ret_val != 0) {
+            printf("Keypair generation failed: %d\n", ret_val);
+            return -1;
+        }
+    }
+
+    QueryPerformanceCounter(&end);
+
+	double keypair_timeused = ((double)(end.QuadPart - start.QuadPart) * 1000) / tc.QuadPart;
+
+    QueryPerformanceCounter(&start);
+
+    for (int i = 0; i < n; i++) {
+        ret_val = pqcrystals_kyber512_ref_enc(ct + pqcrystals_kyber512_CIPHERTEXTBYTES * i, ss + 32 * i, pk+ pqcrystals_kyber512_PUBLICKEYBYTES * i);
+        if (ret_val != 0) {
+            printf("Enc failed: %d\n", ret_val);
+            return -1;
+        }
+    }
+
+    QueryPerformanceCounter(&end);
+
+    double keyenc_timeused = ((double)(end.QuadPart - start.QuadPart) * 1000) / tc.QuadPart;
+
+    QueryPerformanceCounter(&start);
+
+    for (int i = 0; i < n; i++) {
+        ret_val = pqcrystals_kyber512_ref_dec(ss + 32 * i, ct + pqcrystals_kyber512_CIPHERTEXTBYTES * i, sk + pqcrystals_kyber512_SECRETKEYBYTES*i);
+        if (ret_val != 0) {
+            printf("Dec failed: %d\n", ret_val);
+            return -1;
+        }
+    }
+
+    QueryPerformanceCounter(&end);
+
+    double keydec_timeused = ((double)(end.QuadPart - start.QuadPart) * 1000) / tc.QuadPart;
+
+	printf("Key pair %d times: %f ms, avg:  %f ms\n",n, keypair_timeused, keypair_timeused/n);
+    printf("Key enc  %d times: %f ms, avg:  %f ms\n", n,keyenc_timeused, keyenc_timeused /n);
+    printf("Key dec  %d times: %f ms, avg:  %f ms\n", n, keydec_timeused, keydec_timeused /n);
+
+
+	free(pk);
+	free(sk);
+	free(k);
+	free(c);
+
+    return 0;
+}
+
 int main(int argc, char *argv[]) {
 	if (argc == 2) {
         if (strcmp(argv[1], "generatekey") == 0) {
@@ -87,6 +171,11 @@ int main(int argc, char *argv[]) {
             return print_key();
         }
     }
+    else if (argc == 3) {
+        if (strcmp(argv[1], "testspeed") == 0) {
+            return testspeed(argv[2]);
+        }
+	}
 
 #ifdef _WIN32
     WSADATA wsaData;
